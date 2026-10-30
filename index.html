@@ -288,5 +288,55 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
  addEventListener('resize',function(){if(!isOpen)return;var t=target(gs[cur].querySelector('img'));li.style.transition='none';set(t.l,t.t,t.w,t.h,22)});
 })();
 </script>
+<style>
+/* Personal profile + promo widget: added without replacing the original site shell. */
+:root{--profile-glow:rgba(255,122,26,.22)}
+.sp-profile{position:fixed;z-index:1200;right:20px;top:18px;font:500 13px/1.4 'Onest',system-ui,sans-serif;color:var(--ink)}
+.sp-profile-trigger{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:18px;background:rgba(27,29,33,.84);backdrop-filter:blur(18px);box-shadow:0 10px 34px #0003;cursor:pointer;transition:.25s}
+.sp-profile-trigger:hover{border-color:var(--or);transform:translateY(-1px)}
+.sp-avatar{width:38px;height:38px;display:grid;place-items:center;border-radius:13px;object-fit:cover;background:linear-gradient(135deg,var(--or),var(--or2));color:#171717;font-weight:800;font-size:16px;overflow:hidden}
+.sp-ident{display:grid;gap:3px;text-align:left}.sp-name{font-weight:700;max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sp-balance{color:var(--teal);font-size:12px}.sp-chevron{opacity:.7;margin-left:2px}
+.sp-panel{position:absolute;right:0;top:60px;width:min(340px,calc(100vw - 28px));padding:20px;border:1px solid var(--line);border-radius:22px;background:rgba(31,33,38,.97);backdrop-filter:blur(24px);box-shadow:0 24px 70px #0008;display:none;animation:spIn .2s ease}.sp-panel.open{display:block}@keyframes spIn{from{opacity:0;transform:translateY(-7px) scale(.98)}to{opacity:1;transform:none}}
+.sp-panel h3{font:700 17px 'Unbounded',sans-serif;margin:0 0 15px}.sp-field{display:grid;gap:6px;margin:12px 0}.sp-field label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}.sp-field input{width:100%;min-width:0;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#17191d;color:var(--ink);font:500 14px 'Onest',sans-serif;outline:none}.sp-field input:focus{border-color:var(--or);box-shadow:0 0 0 3px var(--profile-glow)}.sp-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sp-btn{border:0;border-radius:12px;padding:12px 14px;font:700 12px 'Onest',sans-serif;cursor:pointer;transition:transform .2s,filter .2s}.sp-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}.sp-btn.primary{background:linear-gradient(135deg,var(--or),var(--or2));color:#20160e}.sp-btn.secondary{background:var(--glass);border:1px solid var(--line);color:var(--ink)}.sp-note{font-size:11px;color:var(--mute);margin-top:10px;line-height:1.5}.sp-status{font-size:12px;min-height:18px;margin-top:8px;color:var(--teal)}
+.sp-promo{position:relative;overflow:hidden;margin:34px auto 64px;max-width:760px;padding:clamp(22px,4vw,34px);border:1px solid var(--line);border-radius:24px;background:radial-gradient(ellipse at 100% 0%,rgba(255,122,26,.16),transparent 46%),linear-gradient(145deg,#25282e,#1c1e22);box-shadow:0 22px 65px #0002}.sp-promo:before{content:'%';position:absolute;right:22px;top:-34px;font:700 145px 'Unbounded',sans-serif;color:#ffffff08;pointer-events:none}.sp-promo .eyebrow{color:var(--or2);font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:700}.sp-promo h2{font-size:clamp(22px,4vw,32px);margin:8px 0}.sp-promo p{color:var(--mute);font-size:14px;margin-bottom:18px}.sp-promo-form{display:flex;gap:10px;position:relative;z-index:1}.sp-promo-form input{flex:1;min-width:0;padding:14px 15px;border:1px solid var(--line);border-radius:13px;background:#17191d;color:var(--ink);font:600 14px 'Onest',sans-serif;outline:none;text-transform:uppercase}.sp-promo-form input:focus{border-color:var(--or);box-shadow:0 0 0 3px var(--profile-glow)}.sp-promo-status{font-size:12px;min-height:18px;margin-top:12px;color:var(--teal)}
+@media(max-width:560px){.sp-profile{right:10px;top:10px}.sp-profile-trigger{gap:7px;padding:6px 9px 6px 6px}.sp-avatar{width:33px;height:33px;border-radius:11px}.sp-name{max-width:90px}.sp-promo-form{flex-direction:column}.sp-promo-form .sp-btn{width:100%}}
+</style>
+<div class="sp-profile" id="spProfile">
+ <button class="sp-profile-trigger" id="spProfileToggle" aria-expanded="false" aria-label="Открыть профиль">
+  <img class="sp-avatar" id="spAvatar" alt="Аватар" hidden><span class="sp-avatar" id="spAvatarFallback">S</span>
+  <span class="sp-ident"><span class="sp-name" id="spTopName">Мой профиль</span><span class="sp-balance" id="spTopBalance">Баланс: 0 ₽</span></span><span class="sp-chevron">⌄</span>
+ </button>
+ <div class="sp-panel" id="spPanel" role="dialog" aria-label="Настройки профиля">
+  <h3>Твой профиль</h3>
+  <div class="sp-field"><label for="spNickname">Никнейм</label><input id="spNickname" maxlength="28" placeholder="Введи никнейм"></div>
+  <div class="sp-field"><label for="spPhoto">Фото профиля</label><input id="spPhoto" type="file" accept="image/*"></div>
+  <div class="sp-field"><label for="spBalanceInput">Баланс (демо)</label><input id="spBalanceInput" type="number" min="0" step="1" placeholder="0"></div>
+  <div class="sp-row"><button class="sp-btn primary" id="spSaveProfile">Сохранить</button><button class="sp-btn secondary" id="spCloseProfile">Закрыть</button></div>
+  <div class="sp-status" id="spProfileStatus" aria-live="polite"></div>
+  <p class="sp-note">Профиль хранится в этом браузере. Баланс здесь демонстрационный: для реальных аккаунтов, оплаты и общего баланса нужен сервер.</p>
+ </div>
+</div>
+<section class="sp-promo" id="promo-code">
+ <div class="eyebrow">Бонусы для своих</div><h2>Есть промокод?</h2><p>Введи код и проверь, доступен ли бонус для твоего аккаунта.</p>
+ <form class="sp-promo-form" id="spPromoForm"><input id="spPromoInput" aria-label="Промокод" autocomplete="off" maxlength="40" placeholder="ВВЕДИТЕ ПРОМОКОД"><button class="sp-btn primary" type="submit">Активировать&nbsp; ↗</button></form>
+ <div class="sp-promo-status" id="spPromoStatus" aria-live="polite"></div>
+ <p class="sp-note">Демо-коды: WELCOME10 и SOOMLING. Пока это демонстрация интерфейса, а не реальная скидка или пополнение.</p>
+</section>
+<script>
+(function(){
+ const $=id=>document.getElementById(id), key='sp-profile-demo-v1';
+ const defaults={nickname:'Мой профиль',balance:0,photo:''};let data;
+ try{data={...defaults,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){data={...defaults}}
+ function paint(){ $('spTopName').textContent=data.nickname||'Мой профиль';$('spTopBalance').textContent='Баланс: '+(Number(data.balance)||0).toLocaleString('ru-RU')+' ₽';$('spNickname').value=data.nickname||'';$('spBalanceInput').value=Math.max(0,Number(data.balance)||0);if(data.photo){$('spAvatar').src=data.photo;$('spAvatar').hidden=false;$('spAvatarFallback').hidden=true}else{$('spAvatar').hidden=true;$('spAvatarFallback').hidden=false;$('spAvatarFallback').textContent=(data.nickname||'S').trim().charAt(0).toUpperCase()||'S'}}
+ function save(){try{localStorage.setItem(key,JSON.stringify(data));return true}catch(e){$('spProfileStatus').textContent='Не удалось сохранить фото: выбери изображение поменьше.';return false}}
+ $('spProfileToggle').addEventListener('click',()=>{const open=$('spPanel').classList.toggle('open');$('spProfileToggle').setAttribute('aria-expanded',String(open))});
+ $('spCloseProfile').addEventListener('click',()=>{$('spPanel').classList.remove('open');$('spProfileToggle').setAttribute('aria-expanded','false')});
+ document.addEventListener('click',e=>{if(!$('spProfile').contains(e.target)){$('spPanel').classList.remove('open');$('spProfileToggle').setAttribute('aria-expanded','false')}});
+ $('spPhoto').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file)return;if(!file.type.startsWith('image/'))return;$('spProfileStatus').textContent='Обрабатываю фото…';const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas'),max=320,scale=Math.min(1,max/Math.max(img.width,img.height));c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);data.photo=c.toDataURL('image/jpeg',.78);$('spProfileStatus').textContent='Фото готово — нажми «Сохранить».';paint()};img.onerror=()=>$('spProfileStatus').textContent='Не удалось открыть это изображение.';img.src=reader.result};reader.readAsDataURL(file)});
+ $('spSaveProfile').addEventListener('click',()=>{data.nickname=$('spNickname').value.trim().slice(0,28)||'Мой профиль';data.balance=Math.max(0,Math.floor(Number($('spBalanceInput').value)||0));if(save()){paint();$('spProfileStatus').textContent='Профиль сохранён в этом браузере.'}});
+ $('spPromoForm').addEventListener('submit',e=>{e.preventDefault();const code=$('spPromoInput').value.trim().toUpperCase(),status=$('spPromoStatus');if(!code){status.style.color='var(--or2)';status.textContent='Сначала введи промокод.';return}if(code==='WELCOME10'||code==='SOOMLING'){status.style.color='var(--teal)';status.textContent='Код принят в демо-режиме! Реальный бонус ещё не подключён.'}else{status.style.color='#ff9b8e';status.textContent='Такого промокода нет или срок его действия истёк.'}});
+ paint();
+})();
+</script>
 </body>
 </html>
